@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Sum, Count, Avg
 from django.conf import settings
 from datetime import date
+from django.shortcuts import get_object_or_404
 
 from .models import UserProfile, DailyNorm, WaterIntake
 from .forms import UserProfileForm, WaterIntakeForm
@@ -108,6 +109,12 @@ def add_water(request):
             intake = form.save(commit=False)
             intake.user = request.user
             intake.save()
+    return redirect('dashboard')
+
+@login_required
+def delete_water(request, intake_id):
+    intake = get_object_or_404(WaterIntake, id=intake_id, user=request.user)
+    intake.delete()
     return redirect('dashboard')
 
 def login_view(request):
