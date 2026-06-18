@@ -73,7 +73,13 @@
                                 {% for intake in today_intakes %}
                                     <li class="list-group-item d-flex justify-content-between">
                                         <span>{{ intake.timestamp|time:"H:i" }}</span>
-                                        <span class="badge bg-primary">{{ intake.amount }} мл</span>
+                                        <div>
+                                            <span class="badge bg-primary">{{ intake.amount }} мл</span>
+                                            <a href="{% url 'delete_water' intake.id %}" 
+                                                class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Удалить запись?')"> ✕ 
+                                            </a>
+                                        </div>
                                     </li>
                                 {% endfor %}
                             </ul>
