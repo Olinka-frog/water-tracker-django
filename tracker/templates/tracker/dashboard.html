@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Water Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body class="bg-light">
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>💧 Water Tracker</h1>
+            <div>
+                <span>{{ user.username }}</span>
+                <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-danger ms-2">Выйти</a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <h5>Сегодня: {{ daily_norm.date }}</h5>
+                        {% if temperature %}
+                            <p>🌡️ Температура в {{ profile.city }}: {{ temperature }}°C</p>
+                        {% endif %}
+                        
+                        <div class="text-center my-3">
+                            <h2>{{ consumed }} / {{ daily_norm.calculated_norm }} мл</h2>
+                            <div class="progress" style="height: 30px;">
+                                <div class="progress-bar bg-success" style="width: {{ progress }}%;">
+                                    {{ progress }}%
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row text-center mt-4">
+                            <div class="col-4">
+                                <h6>🎯 Норма</h6>
+                                <p class="h5">{{ daily_norm.calculated_norm }} мл</p>
+                            </div>
+                            <div class="col-4">
+                                <h6>💧 Выпито</h6>
+                                <p class="h5">{{ consumed }} мл</p>
+                            </div>
+                            <div class="col-4">
+                                <h6>⏳ Осталось</h6>
+                                <p class="h5">{{ remaining }} мл</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <h6>➕ Добавить воду</h6>
+                        <form method="post" class="d-flex gap-2 flex-wrap">
+                            {% csrf_token %}
+                            <input type="hidden" name="add_water" value="1">
+                            <button type="submit" name="amount" value="250" class="btn btn-outline-primary">🥤 250 мл</button>
+                            <button type="submit" name="amount" value="500" class="btn btn-outline-primary">🍾 500 мл</button>
+                            <button type="submit" name="amount" value="1000" class="btn btn-outline-primary">🚰 1 литр</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h6>📋 История сегодня</h6>
+                    </div>
+                    <div class="card-body">
+                        {% if today_intakes %}
+                            <ul class="list-group">
+                                {% for intake in today_intakes %}
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>{{ intake.timestamp|time:"H:i" }}</span>
+                                        <span class="badge bg-primary">{{ intake.amount }} мл</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-muted">Пока ничего не выпито</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Статистика -->
+                <div class="card shadow mt-4">
+                    <div class="card-header">
+                        <h6>📊 Статистика за всё время</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <h6>💧 Всего выпито</h6>
+                                <p class="h5">{{ stats.total_water|default:"0" }} мл</p>
+                            </div>
+                            <div class="col-4">
+                                <h6>📝 Записей</h6>
+                                <p class="h5">{{ stats.total_entries|default:"0" }}</p>
+                            </div>
+                            <div class="col-4">
+                                <h6>📊 Средний приём</h6>
+                                <p class="h5">{{ stats.avg_intake|floatformat:"0"|default:"0" }} мл</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
